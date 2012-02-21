@@ -1,5 +1,16 @@
+* { 
+    -moz-box-sizing: border-box; 
+    -webkit-box-sizing: border-box; 
+    box-sizing: border-box; 
+}
+
+html {
+    height: 100%;
+}
+
 div#site-container {
     margin: 0 auto;
+    height: 100%;
     max-width: 1280px;
     min-width: 960px;
     width: 100%;
@@ -8,6 +19,7 @@ div#site-container {
 }
 
 body {
+    height: 100%;
     background-color: #2E2E2E; 
     margin: 0;
     font-family: 'Open Sans', sans-serif;
@@ -85,13 +97,16 @@ a#logout {
 }
 
 div#content {
+    height: 80%;
+    min-height: 527px;
     width: 100%;
 }
 
 div#container {
-    padding: 6px 12px 10px 13px;
+    padding: 6px 12px 12px 13px;
     background-color: #434E48;
     width: initial;
+    height: 100%;
     border-radius: 5px;
 }
 
@@ -99,18 +114,24 @@ div#main-container {
     clear: both;
     float: left;
     width: 100%;
+    height: 100%;
+}
+
+div#main-right-container {
+    width: 30%;
+    height: 100%;
+    padding-top: 41px;
+    padding-left: 12px; 
+    float: right;
 }
 
 div#main-right {
-    max-width: 345px;
-    width: 27%;
+    width: 100%;
     padding-right: 10px;
     background-color: transparent;
-    height: 507px;
+    height: 100%;
     border: 2px solid #2E2E2E;
     float: right;
-    margin-top: 41px;
-    margin-right: 1px;
     overflow: auto;
 }
 
@@ -126,13 +147,16 @@ div#main-right p {
 }
 
 div#paste-container {
-    max-width: 879px;
     width: 70%;
+    height: 100%;
     background: transparent;
-    height: 555px;
     overflow: hidden;
     float: left;
     border: none;
+}
+
+div#paste-container form {
+    height: 100%;
 }
 
 div#paste-header {
@@ -147,7 +171,7 @@ div#paste-container textarea {
     width: 100%;
     margin: 0px;
     background-color: #DDD;
-    height: 510px;
+    height: 100%;
     /* Dear world: stop using fucking prefixes. */
     -moz-box-sizing: border-box; /* Render properly on  Firefox */
     -ms-box-sizing: border-box; /* Look at me, all tryin' to support IE8 and such. */ 
