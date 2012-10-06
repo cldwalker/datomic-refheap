@@ -2,6 +2,7 @@
   (:require [refheap.config :refer [config]]
             [noir.server :as server]
             [noir.util.middleware :refer [wrap-strip-trailing-slash wrap-canonical-host wrap-force-ssl]]
+            [refheap.db :as db]
             [monger.core :as mg]
             [monger.collection :as mc]
             [monger.ring.session-store :refer [monger-store]]))
@@ -23,6 +24,7 @@
     (when (= mode :prod)
       (server/add-middleware wrap-canonical-host (System/getenv "CANONICAL_HOST"))
       (server/add-middleware wrap-force-ssl))
+    (db/start {})
     (server/start port {:mode mode
                         :ns 'refheap
                         :session-store (monger-store "sessions")})))

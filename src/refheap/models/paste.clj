@@ -9,20 +9,37 @@
             [refheap.dates :refer [parse-string]]
             [refheap.messages :refer [error]]
             [monger.collection :as mc]
+            [datomic-simple.core :as ds]
             [monger.query :refer [with-collection find sort limit skip]])
   (:import java.io.StringReader
            org.apache.commons.codec.digest.DigestUtils))
 
-(def paste-id
-  "The current highest paste-id."
-  (atom
-   (-> (with-collection "pastes"
-         (find {})
-         (sort {:id -1})
-         (limit 1))
-       first
-       :id
-       (or 0))))
+(def model-namespace :paste)
+(def schema (ds/build-schema model-namespace 
+  [ [:random-id :string]
+   [:paste-id :string]
+   [:language :string]
+   [:private :boolean]
+   [:fork :boolean]
+   [:contents :string]
+   [:raw-contents :string]
+   [:summary :string]
+   [:date :string]
+   [:lines :long]
+   ; :user
+   ]))
+
+(def paste-id (atom 0))
+;(def paste-id
+;  "The current highest paste-id."
+;  (atom
+;   (-> (with-collection "pastes"
+;         (find {})
+;         (sort {:id -1})
+;         (limit 1))
+;       first
+;       :id
+;       (or 0))))
 
 (def lexers
   "A map of language names to pygments lexer names."
@@ -268,9 +285,9 @@
         pygmentized (pygmentize short contents true)]
     (if-let [highlighted (:success pygmentized)]
       {:paste-id (if private random-id (str id))
-       :id id
+       ;:id id
        :random-id random-id
-       :user (:id user)
+       ;:user (:id user)
        :language name
        :raw-contents contents
        :summary (:success (pygmentize short (preview contents)))
@@ -281,7 +298,7 @@
                   lines
                   (inc lines)))
        :contents highlighted
-       :fork fork}
+       :fork (boolean fork)}
       {:error (:error pygmentized)})))
 
 (defn validate [contents]
@@ -309,9 +326,11 @@
                     (format/unparse (format/formatters :date-time) (time/now))
                     private
                     fork)]
+        (prn paste)
         (if-let [error (:error paste)]
           error
-          (mc/insert-and-return "pastes" paste))))))
+          (ds/create model-namespace paste))))))
+          ;(mc/insert-and-return "pastes" paste))))))
 
 (defn get-paste
   "Get a paste."

@@ -11,6 +11,8 @@
                  [clavatar "0.2.0"]
                  [clj-time "0.3.3"]
                  [conch "0.3.0"]
+                 [com.datomic/datomic-free "0.8.3524"]
+                 [datomic-simple "0.1.0"]
                  [commons-codec/commons-codec "1.6"]]
   :main refheap.server)
 
