@@ -26,8 +26,7 @@
    [:summary :string]
    [:date :string]
    [:lines :long]
-   ; :user
-   ]))
+   [:user :long]]))
 
 (def paste-id (atom 0))
 ;(def paste-id
@@ -285,9 +284,9 @@
         pygmentized (pygmentize short contents true)]
     (if-let [highlighted (:success pygmentized)]
       {:paste-id (if private random-id (str id))
-       ;:id id
        :random-id random-id
-       ;:user (:id user)
+       ; TODO: associate with user
+       :user 1
        :language name
        :raw-contents contents
        :summary (:success (pygmentize short (preview contents)))
@@ -329,13 +328,14 @@
         (prn paste)
         (if-let [error (:error paste)]
           error
-          (ds/create model-namespace paste))))))
+          (do (ds/create model-namespace paste) paste))))))
           ;(mc/insert-and-return "pastes" paste))))))
 
 (defn get-paste
   "Get a paste."
   [id]
-  (mc/find-one-as-map "pastes" {:paste-id id}))
+  (ds/local-find-first-by model-namespace {:paste-id id}))
+  ;(mc/find-one-as-map "pastes" {:paste-id id}))
 
 (defn get-paste-by-id
   "Get a paste by its :id key (which is the same regardless of being public or private."

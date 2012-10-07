@@ -8,7 +8,8 @@
   (mc/find-one-as-map "users" {:username user}))
 
 (defn get-user-by-id [id]
-  (mc/find-map-by-id "users" (ObjectId. id)))
+  nil)
+  ;(mc/find-map-by-id "users" (ObjectId. id)))
 
 (defn user-pastes [user page & [others]]
   (with-collection "pastes"
