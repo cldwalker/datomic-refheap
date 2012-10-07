@@ -53,7 +53,7 @@
                        (str "<a href=\"/users/" paste-user "\">" paste-user "</a>")
                        paste-user)
            :date (date-string date)
-           :forked (when fork {:from (if-let [paste (:paste-id (paste/get-paste-by-id fork))]
+           :forked (when-not (= fork 0) {:from (if-let [paste (:paste-id (paste/get-paste-by-id fork))]
                                        (str "<a href=\"/paste/" paste "\">" paste "</a>")
                                        "[deleted]")})
            :owner (when (and user-id (= user user-id)) {:id id})

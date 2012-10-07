@@ -18,7 +18,7 @@
    [:paste-id :string]
    [:language :string]
    [:private :boolean]
-   [:fork :boolean]
+   [:fork :long]
    [:contents :string]
    [:raw-contents :string]
    [:summary :string]
@@ -296,7 +296,8 @@
                   lines
                   (inc lines)))
        :contents highlighted
-       :fork (boolean fork)}
+       ; TODO: how do we allow nil here?
+       :fork (or fork 0)}
       {:error (:error pygmentized)})))
 
 (defn validate [contents]
