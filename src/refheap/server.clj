@@ -4,16 +4,10 @@
             [noir.util.middleware :refer [wrap-strip-trailing-slash wrap-canonical-host wrap-force-ssl]]
             [refheap.db :as db]
             [monger.core :as mg]
-            [monger.collection :as mc]
             [monger.ring.session-store :refer [monger-store]]))
 
 (let [uri (get (System/getenv) "MONGOLAB_URI" "mongodb://127.0.0.1/refheap_development")]
   (mg/connect-via-uri! uri))
-
-(mc/ensure-index "pastes" {:user 1 :date 1})
-(mc/ensure-index "pastes" {:private 1})
-(mc/ensure-index "pastes" {:id 1})
-(mc/ensure-index "pastes" {:paste-id 1})
 
 (server/load-views "src/refheap/views/")
 (server/add-middleware wrap-strip-trailing-slash)

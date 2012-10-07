@@ -8,9 +8,7 @@
             [conch.core :as sh]
             [refheap.dates :refer [parse-string]]
             [refheap.messages :refer [error]]
-            [monger.collection :as mc]
-            [datomic-simple.core :as ds]
-            [monger.query :refer [with-collection find sort limit skip]])
+            [datomic-simple.core :as ds])
   (:import java.io.StringReader
            org.apache.commons.codec.digest.DigestUtils))
 
@@ -29,6 +27,7 @@
    [:user :long]]))
 
 (def paste-id (atom 0))
+; TODO: if adding default do this as defn
 ;(def paste-id
 ;  "The current highest paste-id."
 ;  (atom
@@ -338,7 +337,7 @@
 (defn get-paste-by-id
   "Get a paste by its :id key (which is the same regardless of being public or private."
   [id]
-  (mc/find-one-as-map "pastes" {:id id}))
+  (ds/local-find-id id))
 
 (defn update-paste
   "Update an existing paste."
@@ -361,13 +360,15 @@
                          (:fork old))]
               (if-let [error (:error paste)]
                 error
-                (mc/update "pastes" {:id old-id} paste :upsert false :multi false))
+                ; TODO: handle upsert and multi?
+                (ds/update model-namespace old-id paste))
+                ;(mc/update "pastes" {:id old-id} paste :upsert false :multi false))
               paste))))
 
 (defn delete-paste
   "Delete an existing paste."
   [id]
-  (mc/remove "pastes" {:paste-id id}))
+  (ds/delete-by model-namespace {:paste-id id}))
 
 (defn get-pastes
   "Get public pastes."
