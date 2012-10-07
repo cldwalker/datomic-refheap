@@ -329,13 +329,11 @@
         (if-let [error (:error paste)]
           error
           (do (ds/create model-namespace paste) paste))))))
-          ;(mc/insert-and-return "pastes" paste))))))
 
 (defn get-paste
   "Get a paste."
   [id]
   (ds/local-find-first-by model-namespace {:paste-id id}))
-  ;(mc/find-one-as-map "pastes" {:paste-id id}))
 
 (defn get-paste-by-id
   "Get a paste by its :id key (which is the same regardless of being public or private."
@@ -374,20 +372,18 @@
 (defn get-pastes
   "Get public pastes."
   [page]
-  ;; TODO: monger.query provides proper pagination support, I think it
-  ;; makes sense to switch to that later. MK.
-  (with-collection "pastes"
-    (find {:private false})
-    (sort {:date -1})
-    (limit 20)
-    (skip (* 20 (dec page)))))
+  (->> (ds/local-find-by model-namespace {:private false})
+    (drop (* 20 (dec page)))
+    (take 20)
+    (sort-by :date #(compare %2 %1))))
 
 (defn count-pastes
   "Count pastes."
   [& [private?]]
-  (mc/count "pastes" (if-not (nil? private?)
-                       {:private private?}
-                       {})))
+  (count
+    (if-not (nil? private?)
+      (ds/local-find-by model-namespace {:private private?})
+      (ds/local-all-by model-namespace :paste-id))))
 
 (defn count-pages [n per]
   (long (Math/ceil (/ n per))))
