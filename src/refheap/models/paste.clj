@@ -328,7 +328,7 @@
         (prn paste)
         (if-let [error (:error paste)]
           error
-          (do (ds/create model-namespace paste) paste))))))
+          (ds/create model-namespace paste))))))
 
 (defn get-paste
   "Get a paste."
