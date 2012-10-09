@@ -5,8 +5,7 @@
             [cheshire.core :as json]
             [refheap.messages :refer [error]]
             [noir.request :refer [ring-request]]
-            [monger.collection :as mc])
-  (:import org.bson.types.ObjectId))
+            [refheap.models.users :as users]))
 
 (defn create-user [email name]
   (let [name (.toLowerCase name)
@@ -19,16 +18,16 @@
      (error "Username must be between 3 and 15 characters.")
      (not= name (first (re-seq #"\w+" name)))
      (error "Username cannot contain non-alphanumeric characters.")
-     (mc/find-one-as-map "users" {:username name})
+     (users/get-user name)
      (error "Username already exists.")
-     :else (let [user (mc/insert-and-return "users" qmap)]
-             (session/put! :user (assoc qmap :id (str (:_id user))))))))
+     :else (let [user (users/create qmap)]
+             (session/put! :user user)))))
 
 (defn user-exists [email]
-  (when-let [{:keys [username _id]} (mc/find-one-as-map "users" {:email email})]
+  (when-let [{:keys [username id]} (users/find-by-email email)]
     (session/put! :user {:email email
                          :username username
-                         :id (str _id)})
+                         :id id})
     username))
 
 (defn verify-host [hosts]
