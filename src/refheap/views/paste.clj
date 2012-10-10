@@ -39,8 +39,8 @@
               :as all}
              (paste/get-paste id)]
     (let [user-id (:id (session/get :user))
-          paste-user (if user
-                       (:username (users/get-user-by-id user))
+          paste-user (if-let [user (users/expand-ref user)] 
+                       (:username (users/get-user-by-id (:id user)))
                        "anonymous")]
       (layout
         (stencil/render-file
@@ -72,15 +72,16 @@
   (stencil/render-file
     "refheap/views/templates/preview"
     {:pastes (for [{:keys [paste-id lines summary date user private]} pastes]
+               (let [user (users/expand-ref user)]
                {:header (stencil/render-file
                           header-template
-                          {:user (when user (users/get-user-by-id user))
+                          {:user (when user (users/get-user-by-id (:id user)))
                            :date (date-string date)
                            :private private
                            :id paste-id})
                 :id paste-id
                 :summary summary
-                :more (> lines 5)})}))
+                :more (> lines 5)}))}))
 
 (defn render-embed-page [paste]
   (let [id (:paste-id paste)]

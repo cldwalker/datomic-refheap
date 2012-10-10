@@ -24,7 +24,7 @@
    [:summary :string]
    [:date :string]
    [:lines :long]
-   [:user :long]]))
+   [:user :ref]]))
 
 (def paste-id (atom 0))
 ; TODO: if adding default do this as defn
@@ -282,22 +282,22 @@
         random-id (or random-id (generate-id))
         pygmentized (pygmentize short contents true)]
     (if-let [highlighted (:success pygmentized)]
-      {:paste-id (if private random-id (str id))
-       :random-id random-id
-       ; TODO: associate with user
-       :user 1
-       :language name
-       :raw-contents contents
-       :summary (:success (pygmentize short (preview contents)))
-       :private (boolean private)
-       :date date
-       :lines (let [lines (count (filter #{\newline} contents))]
-                (if (= \newline (last contents))
-                  lines
-                  (inc lines)))
-       :contents highlighted
-       ; TODO: how do we allow nil here?
-       :fork (or fork 0)}
+      (merge
+        {:paste-id (if private random-id (str id))
+         :random-id random-id
+         :language name
+         :raw-contents contents
+         :summary (:success (pygmentize short (preview contents)))
+         :private (boolean private)
+         :date date
+         :lines (let [lines (count (filter #{\newline} contents))]
+                  (if (= \newline (last contents))
+                    lines
+                    (inc lines)))
+         :contents highlighted
+         ; TODO: how do we allow nil here?
+         :fork (or fork 0)}
+         (if user {:user (:id user)} {})) 
       {:error (:error pygmentized)})))
 
 (defn validate [contents]
