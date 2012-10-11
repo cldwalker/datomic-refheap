@@ -308,6 +308,9 @@
 (defn parse-date [date]
   (format/parse))
 
+(defn user-id [paste]
+  (:db/id (:user paste)))
+
 (defn paste
   "Create a new paste."
   [language contents private user & [fork]]
@@ -350,7 +353,7 @@
     (cond
       error error
       (nil? user) "You must be logged in to edit pastes."
-      (not= (:id user) (:user old)) "You can only edit your own pastes!"
+      (not= (:id user) (user-id old)) "You can only edit your own pastes!"
       :else (let [{old-id :id random-id :random-id} old
                   paste (paste-map
                          old-id

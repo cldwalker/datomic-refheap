@@ -117,13 +117,13 @@
 (defpage "/paste/:id/edit" {:keys [id]}
   (when-let [user (:id (session/get :user))]
     (let [paste (paste/get-paste id)]
-      (when (= (:user paste) user)
+      (when (= (paste/user-id paste) user)
         (create-paste-page nil paste)))))
 
 (defpage "/paste/:id/fork" {:keys [id]}
   (let [user (:id (session/get :user))
         paste (paste/get-paste id)]
-    (when (and user paste (not= (:user paste) user))
+    (when (and user paste (not= (paste/user-id paste) user))
       (let [forked (paste/paste (:language paste)
                                 (:raw-contents paste)
                                 (:private paste)
@@ -132,7 +132,7 @@
         (redirect (str "/paste/" (:paste-id forked)))))))
 
 (defpage "/paste/:id/delete" {:keys [id]}
-  (when-let [user (:user (paste/get-paste id))]
+  (when-let [user (paste/user-id (paste/get-paste id))]
     (when (= user (:id (session/get :user)))
       (paste/delete-paste id)
       (redirect (str "/users/" (:username (session/get :user)))))))
