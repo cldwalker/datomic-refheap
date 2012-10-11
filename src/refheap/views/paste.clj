@@ -39,8 +39,8 @@
               :as all}
              (paste/get-paste id)]
     (let [user-id (:id (session/get :user))
-          paste-user (if-let [user (users/get-user-by-ref user)] 
-                       (:username user)
+          paste-user (if-let [user-map (users/get-user-by-ref user)]
+                       (:username user-map)
                        "anonymous")]
       (layout
         (stencil/render-file
@@ -56,8 +56,8 @@
            :forked (when-not (= fork 0) {:from (if-let [paste (:paste-id (paste/get-paste-by-id fork))]
                                        (str "<a href=\"/paste/" paste "\">" paste "</a>")
                                        "[deleted]")})
-           :owner (when (and user-id (= user user-id)) {:id id})
-           :fork (when (and user-id (not= user user-id)) {:id id})
+           :owner (when (and user-id (= (paste/user-id all) user-id)) {:id id})
+           :fork (when (and user-id (not= (paste/user-id all) user-id)) {:id id})
            :contents contents})
         {:file "refheap/views/templates/showhead"
          :title (str paste-user "'s paste: " id)}))))
