@@ -5,10 +5,6 @@
 (def model-namespace :user)
 (def schema (ds/build-schema model-namespace [[:username :string] [:email :string] [:token :string]]))
 
-; TODO: move
-(defn expand-ref [m]
-  (if (empty? m) nil (ds/localize-attr (ds/entity->map m))))
-
 (defn create [attr]
   (ds/create model-namespace attr))
 
@@ -28,7 +24,7 @@
   (ds/local-find-id id))
 
 (defn get-user-by-ref [paste-ref]
-  (if-let [user (expand-ref paste-ref)] (get-user-by-id (:id user))))
+  (if-let [user (ds/expand-ref paste-ref)] (get-user-by-id (:id user))))
 
 (defn user-pastes-for [user & [others]]
   (if-let [user (get-user user)]
