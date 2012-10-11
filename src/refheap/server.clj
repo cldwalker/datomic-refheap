@@ -2,12 +2,7 @@
   (:require [refheap.config :refer [config]]
             [noir.server :as server]
             [noir.util.middleware :refer [wrap-strip-trailing-slash wrap-canonical-host wrap-force-ssl]]
-            [refheap.db :as db]
-            [monger.core :as mg]
-            [monger.ring.session-store :refer [monger-store]]))
-
-(let [uri (get (System/getenv) "MONGOLAB_URI" "mongodb://127.0.0.1/refheap_development")]
-  (mg/connect-via-uri! uri))
+            [refheap.db :as db]))
 
 (server/load-views "src/refheap/views/")
 (server/add-middleware wrap-strip-trailing-slash)
@@ -20,6 +15,5 @@
       (server/add-middleware wrap-force-ssl))
     (db/start {})
     (server/start port {:mode mode
-                        :ns 'refheap
-                        :session-store (monger-store "sessions")})))
+                        :ns 'refheap})))
 
