@@ -1,6 +1,5 @@
 (ns refheap.utilities
-  (:require [refheap.models.paste :as paste]
-            [datomic-simple.core :as ds]))
+  (:require [refheap.models.paste :as paste]))
 
 (defn regenerate
   "Regenerates a paste's pygmentized text and preview text from
@@ -15,6 +14,6 @@
                   paste/lookup-lexer
                   second
                   :short)]
-    (ds/update paste/model-namespace (:id paste)
+    (paste/update (:id paste)
       { :contents (:success (paste/pygmentize lexer contents))
         :summary (:success (paste/pygmentize lexer (paste/preview contents)))})))

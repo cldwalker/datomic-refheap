@@ -3,14 +3,20 @@
             [refheap.models.paste :as paste]))
 
 (def model-namespace :user)
-(def schema (ds/build-schema model-namespace [[:username :string] [:email :string]]))
+(def schema (ds/build-schema model-namespace [[:username :string] [:email :string] [:token :string]]))
 
-; TODO: detect empty user correctly
+; TODO: move
 (defn expand-ref [m]
   (if (empty? m) nil (ds/localize-attr (ds/entity->map m))))
 
 (defn create [attr]
   (ds/create model-namespace attr))
+
+(defn update [id attr]
+  (ds/update model-namespace id attr))
+
+(defn find-first-by [attr]
+  (ds/local-find-first-by model-namespace attr))
 
 (defn get-user [user]
   (ds/local-find-first-by model-namespace {:username user}))
@@ -20,6 +26,9 @@
 
 (defn get-user-by-id [id]
   (ds/local-find-id id))
+
+(defn get-user-by-ref [paste-ref]
+  (if-let [user (expand-ref paste-ref)] (get-user-by-id (:id user))))
 
 (defn user-pastes-for [user & [others]]
   (if-let [user (get-user user)]

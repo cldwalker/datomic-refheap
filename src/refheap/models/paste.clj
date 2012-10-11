@@ -1,5 +1,4 @@
 (ns refheap.models.paste
-  (:refer-clojure :exclude [sort find])
   (:require [noir.session :as session]
             [clojure.java.io :as io]
             [clojure.string :as string]
@@ -339,6 +338,9 @@
   "Get a paste by its :id key (which is the same regardless of being public or private."
   [id]
   (ds/local-find-id id))
+
+(defn update [id attr]
+  (ds/update model-namespace id attr))
 
 (defn update-paste
   "Update an existing paste."

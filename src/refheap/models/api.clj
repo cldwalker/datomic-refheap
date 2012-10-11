@@ -2,8 +2,7 @@
   (:require [refheap.models.users :as users]
             [refheap.models.paste :as pastes]
             [noir.response :as response]
-            [clojure.string :as string]
-            [monger.collection :as mc])
+            [clojure.string :as string])
   (:import java.util.UUID))
 
 (defn gen-token
@@ -16,7 +15,7 @@
   [userid]
   (let [old (users/get-user-by-id userid)
         new (gen-token)]
-    (mc/update "users" old (assoc old :token new))
+    (users/update (:id old) {:token new})
     new))
 
 (defn get-token
@@ -29,13 +28,12 @@
   "Validate that a token exists and that the user has that token."
   [username token]
   (when (and username token)
-    (if-let [user (mc/find-one-as-map "users" {:token token, :username (.toLowerCase username)})]
-      (-> user
-          (assoc :id (str (:_id user)))
-          (dissoc :_id))
+    (if-let [user (users/find-first-by {:token token, :username (.toLowerCase username)})]
+      user
       "User or token not valid.")))
 
 (defn id->paste-id [paste]
+  ; TODO: fix when fork is fixed
   (if-let [fork (:fork paste)]
     (assoc paste :fork (or (:paste-id (pastes/get-paste-by-id fork)) "deleted"))
     paste))
@@ -46,9 +44,9 @@
   (-> paste
       (assoc :contents (:raw-contents paste))
       (assoc :user (when-let [user (:user paste)]
-                     (:username (users/get-user-by-id user))))
+                     (:username (users/get-user-by-ref user))))
       (assoc :url (str "https://www.refheap.com/paste/" (:paste-id paste)))
-      (dissoc :id :_id :raw-contents :summary)
+      (dissoc :id :raw-contents :summary)
       id->paste-id))
 
 (defn string->bool [s] (Boolean/parseBoolean s))
