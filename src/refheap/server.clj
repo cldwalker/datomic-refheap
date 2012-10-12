@@ -14,6 +14,7 @@
       (server/add-middleware wrap-canonical-host (System/getenv "CANONICAL_HOST"))
       (server/add-middleware wrap-force-ssl))
     (db/start {})
+    ; TODO: :session-store for datomic
     (server/start port {:mode mode
                         :ns 'refheap})))
 
