@@ -24,11 +24,9 @@
              (session/put! :user user)))))
 
 (defn user-exists [email]
-  (when-let [{:keys [username id]} (users/find-by-email email)]
-    (session/put! :user {:email email
-                         :username username
-                         :id id})
-    username))
+  (when-let [user (users/find-by-email email)]
+    (session/put! :user (select-keys user [:id :username :email]))
+    (:username user)))
 
 (defn verify-host [hosts]
   (hosts (first (.split (get-in (ring-request) [:headers "host"]) ":"))))
