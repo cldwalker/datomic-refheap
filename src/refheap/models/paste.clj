@@ -25,18 +25,8 @@
    [:lines :long]
    [:user :ref]]))
 
+; TODO: update paste-id in server/start when server restarts
 (def paste-id (atom 0))
-; TODO: if adding default do this as defn
-;(def paste-id
-;  "The current highest paste-id."
-;  (atom
-;   (-> (with-collection "pastes"
-;         (find {})
-;         (sort {:id -1})
-;         (limit 1))
-;       first
-;       :id
-;       (or 0))))
 
 (def lexers
   "A map of language names to pygments lexer names."
@@ -294,9 +284,9 @@
                     lines
                     (inc lines)))
          :contents highlighted
-         ; TODO: how do we allow nil here?
-         :fork (or fork 0)}
-         (if user {:user (:id user)} {})) 
+         }
+         (if user {:user (:id user)} {})
+         (if fork {:fork fork} {})) 
       {:error (:error pygmentized)})))
 
 (defn validate [contents]
@@ -327,7 +317,6 @@
                     (format/unparse (format/formatters :date-time) (time/now))
                     private
                     fork)]
-        (prn paste)
         (if-let [error (:error paste)]
           error
           (ds/create model-namespace paste))))))
@@ -366,9 +355,7 @@
                          (:fork old))]
               (if-let [error (:error paste)]
                 error
-                ; TODO: handle upsert and multi?
                 (ds/update model-namespace old-id paste))
-                ;(mc/update "pastes" {:id old-id} paste :upsert false :multi false))
               paste))))
 
 (defn delete-paste

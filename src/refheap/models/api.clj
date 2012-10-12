@@ -33,7 +33,6 @@
       "User or token not valid.")))
 
 (defn id->paste-id [paste]
-  ; TODO: fix when fork is fixed
   (if-let [fork (:fork paste)]
     (assoc paste :fork (or (:paste-id (pastes/get-paste-by-id fork)) "deleted"))
     paste))
