@@ -41,7 +41,7 @@
        (api/response :unprocessable "You can't edit anonymous pastes." return)
        (nil? user)
        (api/response :unprocessable "You must be authenticated to edit pastes." return)
-       (not= (:id user) (:user paste))
+       (not= (:id user) (paste/user-id paste))
        (api/response :unprocessable "You can only edit pastes that you own." return)
        :else (let [paste (paste/update-paste paste
                                              (or language (:language paste))
@@ -65,7 +65,7 @@
        (api/response :unprocessable "You can't delete anonymous pastes." return)
        (nil? user)
        (api/response :unprocessable "You must be authenticated to delete pastes." return)
-       (not= (:id user) (:user paste))
+       (not= (:id user) (paste/user-id paste))
        (api/response :unprocessable "You can only delete pastes that you own." return)
        :else (api/response :no-content (paste/delete-paste id) return)))
     (api/response :not-found "Paste doesn't exist." return)))
@@ -77,7 +77,7 @@
        (string? user)
        (api/response :unprocessable user return)
        (= (:id user)
-          (:user paste)) (api/response :unprocessable "You can't fork your own pastes." return)
+          (paste/user-id paste)) (api/response :unprocessable "You can't fork your own pastes." return)
        :else (api/response :created
                            (api/process-paste
                             (paste/paste (:language paste)
