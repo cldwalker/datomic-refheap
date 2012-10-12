@@ -25,7 +25,6 @@
    [:lines :long]
    [:user :ref]]))
 
-; TODO: update paste-id in server/start when server restarts
 (def paste-id (atom 0))
 
 (def lexers
@@ -301,10 +300,23 @@
 (defn user-id [paste]
   (:db/id (:user paste)))
 
+(defn update-paste-id []
+  (when (= @paste-id 0)
+    (when-let
+      [max-paste-id (->>
+                      (ds/local-all-by model-namespace :paste-id)
+                      (sort-by :paste-id #(compare %2 %1))
+                      first
+                      :paste-id)]
+      (reset! paste-id (Integer. max-paste-id)))))
+
 (defn paste
   "Create a new paste."
   [language contents private user & [fork]]
   (let [validated (validate contents)]
+    ; move to server/start when we can
+    (update-paste-id)
+
     (if-let [error (:error validated)]
       error
       (let [id (swap! paste-id inc)
