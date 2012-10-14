@@ -12,23 +12,23 @@
   (ds/update model-namespace id attr))
 
 (defn find-first-by [attr]
-  (ds/local-find-first-by model-namespace attr))
+  (ds/find-first-by model-namespace attr))
 
 (defn get-user [user]
-  (ds/local-find-first-by model-namespace {:username user}))
+  (ds/find-first-by model-namespace {:username user}))
 
 (defn find-by-email [email]
-  (ds/local-find-first-by model-namespace {:email email}))
+  (ds/find-first-by model-namespace {:email email}))
 
 (defn get-user-by-id [id]
-  (ds/local-find-id id))
+  (ds/find-id id))
 
 (defn get-user-by-ref [paste-ref]
   (if-let [user (ds/expand-ref paste-ref)] (get-user-by-id (:id user))))
 
 (defn user-pastes-for [user & [others]]
   (if-let [user (get-user user)]
-    (ds/local-find-by paste/model-namespace (merge {:user (:id user)} others))
+    (ds/find-by paste/model-namespace (merge {:user (:id user)} others))
     '()))
 
 (defn user-pastes [user page & [others]]
