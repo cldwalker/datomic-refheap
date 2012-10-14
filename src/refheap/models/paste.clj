@@ -24,6 +24,7 @@
    [:date :string]
    [:lines :long]
    [:user :ref]]))
+(ds/create-model-fns model-namespace)
 
 (def paste-id (atom 0))
 
@@ -304,7 +305,7 @@
   (when (= @paste-id 0)
     (when-let
       [max-paste-id (->>
-                      (ds/find-all-by model-namespace :paste-id)
+                      (find-all-by :paste-id)
                       (sort-by :paste-id #(compare %2 %1))
                       first
                       :paste-id)]
@@ -331,20 +332,17 @@
                     fork)]
         (if-let [error (:error paste)]
           error
-          (ds/create model-namespace paste))))))
+          (create paste))))))
 
 (defn get-paste
   "Get a paste."
   [id]
-  (ds/find-first model-namespace {:paste-id id}))
+  (find-first {:paste-id id}))
 
 (defn get-paste-by-id
   "Get a paste by its :id key (which is the same regardless of being public or private."
   [id]
   (ds/find-id id))
-
-(defn update [id attr]
-  (ds/update model-namespace id attr))
 
 (defn update-paste
   "Update an existing paste."
@@ -367,18 +365,18 @@
                          (:fork old))]
               (if-let [error (:error paste)]
                 error
-                (ds/update model-namespace old-id paste))
+                (update old-id paste))
               paste))))
 
 (defn delete-paste
   "Delete an existing paste."
   [id]
-  (ds/delete-all model-namespace {:paste-id id}))
+  (delete-all {:paste-id id}))
 
 (defn get-pastes
   "Get public pastes."
   [page]
-  (->> (ds/find-all model-namespace {:private false})
+  (->> (find-all {:private false})
     (drop (* 20 (dec page)))
     (take 20)
     (sort-by :date #(compare %2 %1))))
@@ -388,8 +386,8 @@
   [& [private?]]
   (count
     (if-not (nil? private?)
-      (ds/find-all model-namespace {:private private?})
-      (ds/find-all-by model-namespace :paste-id))))
+      (find-all {:private private?})
+      (find-all-by :paste-id))))
 
 (defn count-pages [n per]
   (long (Math/ceil (/ n per))))

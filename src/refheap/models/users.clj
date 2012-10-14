@@ -7,21 +7,13 @@
      [[:username :string]
       [:email :string]
       [:token :string]]))
-
-(defn create [attr]
-  (ds/create model-namespace attr))
-
-(defn update [id attr]
-  (ds/update model-namespace id attr))
-
-(defn find-first-by [attr]
-  (ds/find-first model-namespace attr))
+(ds/create-model-fns model-namespace)
 
 (defn get-user [user]
-  (ds/find-first model-namespace {:username user}))
+  (find-first {:username user}))
 
 (defn find-by-email [email]
-  (ds/find-first model-namespace {:email email}))
+  (find-first {:email email}))
 
 (defn get-user-by-id [id]
   (ds/find-id id))
@@ -31,7 +23,7 @@
 
 (defn user-pastes-for [user & [others]]
   (if-let [user (get-user user)]
-    (ds/find-all paste/model-namespace (merge {:user (:id user)} others))
+    (paste/find-all (merge {:user (:id user)} others))
     '()))
 
 (defn user-pastes [user page & [others]]

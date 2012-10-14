@@ -28,7 +28,7 @@
   "Validate that a token exists and that the user has that token."
   [username token]
   (when (and username token)
-    (if-let [user (users/find-first-by {:token token, :username (.toLowerCase username)})]
+    (if-let [user (users/find-first {:token token, :username (.toLowerCase username)})]
       user
       "User or token not valid.")))
 
