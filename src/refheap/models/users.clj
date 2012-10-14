@@ -3,7 +3,10 @@
             [refheap.models.paste :as paste]))
 
 (def model-namespace :user)
-(def schema (ds/build-schema model-namespace [[:username :string] [:email :string] [:token :string]]))
+(def schema (ds/build-schema model-namespace
+     [[:username :string]
+      [:email :string]
+      [:token :string]]))
 
 (defn create [attr]
   (ds/create model-namespace attr))
