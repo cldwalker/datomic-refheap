@@ -305,7 +305,7 @@
   (when (= @paste-id 0)
     (when-let
       [max-paste-id (->>
-                      (find-all-by :paste-id)
+                      (find-all)
                       (sort-by :paste-id #(compare %2 %1))
                       first
                       :paste-id)]
@@ -387,7 +387,7 @@
   (count
     (if-not (nil? private?)
       (find-all {:private private?})
-      (find-all-by :paste-id))))
+      (find-all))))
 
 (defn count-pages [n per]
   (long (Math/ceil (/ n per))))
